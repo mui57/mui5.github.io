@@ -15,7 +15,7 @@
 
     <script>
         // ============================================================
-        //  反射神経測定（スタート＋結果のみ）
+        //  反射神経測定
         // ============================================================
 
         const box = document.getElementById('box');
@@ -81,16 +81,6 @@
         startBtn.addEventListener('click', onStart);
         box.addEventListener('click', onBoxClick);
 
-        // スペースキー対応
-        document.addEventListener('keydown', (e) => {
-            if (e.key === ' ' || e.key === 'Space') {
-                e.preventDefault();
-                if (!startBtn.disabled) onStart();
-                else onBoxClick();
-            }
-        });
-
-        resetToWaiting();
     </script>
 </body>
 </html>
