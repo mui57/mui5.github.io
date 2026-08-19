@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>反射神経測定</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="box" class="waiting">スタートを押す</div>
+
+    <div id="result"></div>
+
+    <button id="startBtn">▶ スタート</button>
+
+    <script>
+        // ============================================================
+        //  反射神経測定（スタート＋結果のみ）
+        // ============================================================
+
+        const box = document.getElementById('box');
+        const result = document.getElementById('result');
+        const startBtn = document.getElementById('startBtn');
+
+        let status = 'waiting';   // waiting | ready | go | done
+        let timerId = null;
+        let startTime = 0;
+
+        function clearTimer() {
+            if (timerId) { clearTimeout(timerId); timerId = null; }
+        }
+
+        function setDisplay(state) {
+            box.className = state;
+            if (state === 'waiting') box.textContent = 'スタートを押す';
+            else if (state === 'ready') box.textContent = '🔴';
+            else if (state === 'go') box.textContent = '🟢 クリック！';
+            else if (state === 'done') box.textContent = '✅ 完了';
+        }
+
+        function resetToWaiting() {
+            clearTimer();
+            status = 'waiting';
+            startTime = 0;
+            setDisplay('waiting');
+            result.textContent = '';
+            startBtn.textContent = '▶ スタート';
+        }
+
+        function onStart() {
+            resetToWaiting();
+
+            status = 'ready';
+            setDisplay('ready');
+            startBtn.disabled = true;
+
+            const delay = Math.floor(Math.random() * 4000) + 1000;
+
+            timerId = setTimeout(() => {
+                status = 'go';
+                startTime = performance.now();
+                setDisplay('go');
+                timerId = null;
+            }, delay);
+        }
+
+        function onBoxClick() {
+            if (status === 'go') {
+                const endTime = performance.now();
+                const ms = Math.round(endTime - startTime);
+
+                status = 'done';
+                setDisplay('done');
+                result.textContent = `${ms} ms`;
+                startBtn.textContent = '🔄 もう一度';
+                startBtn.disabled = false;
+                clearTimer();
+            }
+        }
+
+        startBtn.addEventListener('click', onStart);
+        box.addEventListener('click', onBoxClick);
+
+        // スペースキー対応
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ' || e.key === 'Space') {
+                e.preventDefault();
+                if (!startBtn.disabled) onStart();
+                else onBoxClick();
+            }
+        });
+
+        resetToWaiting();
+    </script>
+</body>
+</html>
